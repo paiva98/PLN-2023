@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+      form,
+      div {
+        text-align: center;
+      }
+
+      form {
+        margin: 20px;
+      }
+
+      input,
+      button {
+        padding: 10px;
+      }
+
+      input,
+      button {
+        border: 2px solid blue;
+        border-radius: 5px;
+      }
+
+      button {
+        color: white;
+        background-color: green;
+      }
+
+      #result {
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="form">
+      <label for="">
+        <input
+          type="text"
+          id="input_string"
+          placeholder="Digite os seus sintomas"
+        />
+      </label>
+      <button type="submit" id="submit">Enviar</button>
+    </form>
+    <div id="result"></div>
+    <script>
+      $(document).ready(function () {
+        $("#form").submit(function (event) {
+          event.preventDefault(); // Evita que o formulário seja enviado normalmente
+          var input_string = $("#input_string").val(); // Obtém o valor do campo de texto
+          $.ajax({
+            url: "/bfs/", // A rota do Flask que vai receber a string
+            type: "POST", // O método HTTP que vai ser usado
+            data: { input_string: input_string }, // Os dados que vão ser enviados
+            success: function (response) {
+              // Converte a resposta do Flask em uma tabela HTML
+              var table =
+                "<table id='medicines'><thead><tr><th>Medicamento</th><th>Número de vezes</th></tr></thead><tbody>";
+              for (var i = 0; i < response.length; i++) {
+                table +=
+                  "<tr><td>" +
+                  response[i][0] +
+                  "</td><td>" +
+                  response[i][1] +
+                  "</td></tr>";
+              }
+              table += "</tbody></table>";
+              $("#result").html(table); // Atualiza o conteúdo da div result com a tabela HTML
+              // Usa o DataTables para adicionar funcionalidades extras à tabela
+              $("#medicines").DataTable();
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
